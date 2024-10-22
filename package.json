@@ -1,0 +1,24 @@
+{
+  "name": "travel-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node ./src/index.ts",
+    "start": "tsc && node dist/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1",
+    "mysql2": "^3.11.3",
+    "nodemon": "^3.1.7",
+    "sequelize": "^6.37.4",
+    "typescript": "^5.6.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/sequelize": "^4.28.20",
+    "ts-node": "^10.9.2"
+  }
+}

@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import sequelize from '../config/database'; // Importation de la configuration de la base de données
 import Travel from '../models/Travel'; // Importation du modèle Travel
+import Users from '../models/users'; // Importation du modèle Users
 import cors from 'cors';
 
 
@@ -19,7 +20,19 @@ sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch((err: Error) => console.log('Error: ' + err));
 
-// Define routes
+
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+  
+  
+  sequelize.sync({ force: false }).then(() => {
+    console.log('Database & tables created!');
+  }); // Synchronisation du modèle avec la base de données
+
+
+
+// Define routes for Travel
 app.get('/travels', async (req: Request, res: Response) => {
   try {
     const travels = await Travel.findAll();
@@ -89,11 +102,76 @@ app.delete('/travels/:id', async (req: Request, res: Response) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Define routes for Users
+
+app.get('/users', async (req: Request, res: Response) => {
+  try {
+    const users = await Users.findAll();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+app.get('/users/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const user = await Users.findByPk(id);
+    if (user) {
+      res.json(user);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+});
+
+app.post('/users', async (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+  try {
+    const user = await Users.create({ name, email, password });
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create user' });
+  }
+});
+
+app.put('/users/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, email, password } = req.body;
+  try {
+    const user = await Users.findByPk(id);
+    if (user) {
+      user.name = name;
+      user.email = email;
+      user.password = password;
+      await user.save();
+      res.json(user);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
+app.delete('/users/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const user = await Users.findByPk(id);
+    if (user) {
+      await user.destroy();
+      res.json({ message: 'User deleted' });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
 });
 
 
-sequelize.sync({ force: false }).then(() => {
-  console.log('Database & tables created!');
-}); // Synchronisation du modèle avec la base de données
+
+
+

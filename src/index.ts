@@ -1,9 +1,15 @@
 import express, { Request, Response } from 'express';
 import sequelize from '../config/database'; // Importation de la configuration de la base de données
 import Travel from '../models/Travel'; // Importation du modèle Travel
+import cors from 'cors';
+
+
+
 
 const app = express(); // Création d'une instance de l'application express
 const PORT = process.env.PORT || 8000; // Définition du port sur lequel le serveur va écouter
+
+app.use(cors());
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -88,6 +94,6 @@ app.listen(PORT, () => {
 });
 
 
-sequelize.sync({ force: true }).then(() => {
+sequelize.sync({ force: false }).then(() => {
   console.log('Database & tables created!');
 }); // Synchronisation du modèle avec la base de données

@@ -8,6 +8,7 @@ class Travel extends Model {
   public country!: string;
   public image!: string;
   public description!: string;
+  public category_id!: number;
 }
 
 Travel.init(
@@ -35,6 +36,10 @@ Travel.init(
     },
     description: {
       type: new DataTypes.TEXT,
+      allowNull: false,
+    },
+    category_id: {
+      type: DataTypes.INTEGER.UNSIGNED,
       allowNull: false,
     },
   },

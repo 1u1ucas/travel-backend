@@ -3,6 +3,7 @@ import sequelize from '../config/database'; // Importation de la configuration d
 import Travel from '../models/Travel'; // Importation du modèle Travel
 import cors from 'cors';
 import dotenv from 'dotenv';
+import Category from '../models/Category';
 // import jwt from 'jsonwebtoken';
 // import Users from '../models/users'; // Importation du modèle Users
 // import bcrypt from 'bcryptjs';
@@ -36,6 +37,7 @@ app.get('/travels', async (req: Request, res: Response) => {
     const travels = await Travel.findAll();
     res.json(travels);
   } catch (error) {
+    console.log('Failed to fetch travels:', error);
     res.status(500).json({ error: 'Failed to fetch travels' });
   }
 });
@@ -100,6 +102,79 @@ app.delete('/travels/:id', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to delete travel' });
   }
 });
+
+
+// Define routes for Category
+
+app.get('/categories', async (req: Request, res: Response) => {
+  try {
+    const categories = await Category.findAll();
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
+app.get('/categories/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const category = await Category.findByPk(id);
+    if (category) {
+      res.json(category);
+    } else {
+      res.status(404).json({ error: 'Category not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch category' });
+  }
+});
+
+app.post('/categories', async (req: Request, res: Response) => {
+  const { name, description } = req.body;
+  try {
+    const category = await Category.create({ name, description });
+    res.json(category);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create category' });
+  }
+});
+
+app.put('/categories/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { name, description } = req.body;
+  try {
+    const category = await Category.findByPk(id);
+    if (category) {
+      category.name = name || category.name;
+      category.description = description || category.description;
+      await category.save();
+      res.json(category);
+    } else {
+      res.status(404).json({ error: 'Category not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+app.delete('/categories/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const category = await Category.findByPk(id);
+    if (category) {
+      await category.destroy();
+      res.json({ message: 'Category deleted' });
+    } else {
+      res.status(404).json({ error: 'Category not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete category' });
+  }
+});
+
+
+
+
 
 // // Define routes for Users
 
